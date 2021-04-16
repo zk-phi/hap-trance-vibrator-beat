@@ -3,6 +3,7 @@ const portAudio = require('naudiodon');
 const usb = require('usb');
 
 const DEVICE_ID = 2;
+const AMPLITUDE = 0.25;
 const HIGHWATER_MARK = 16; // controls buffer size
 
 const audioIn = new portAudio.AudioIO({
@@ -38,7 +39,7 @@ const consumer = new Writable({
       sum += data.readInt8(i) ** 2;
     }
     // --- 0 - 255 value
-    const value = Math.min(Math.floor(sum / data.length) / 4, 255);
+    const value = Math.min(Math.floor(sum / data.length) * AMPLITUDE, 255);
     trv.controlTransfer(65, 1, value, 0, buf);
     // --- 0 - 15 value
     const visualizerValue = Math.floor(value / 16);
