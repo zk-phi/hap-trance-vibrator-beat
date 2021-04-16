@@ -40,7 +40,7 @@
    node devices.js
    ```
 
-   で一覧が出るので、目当てのデバイスの id を `index.js` の
+   で一覧が出るので、目当てのデバイス (ステミキ、仮想サウンドデバイス) の id を `index.js` の
 
    ```
    const DEVICE_ID = 2;
