@@ -3,13 +3,13 @@ const portAudio = require('naudiodon');
 const usb = require('usb');
 
 const DEVICE_ID = 2;
-const HIGHWATER_MARK = 512; // controls buffer size
+const HIGHWATER_MARK = 16; // controls buffer size
 
 const audioIn = new portAudio.AudioIO({
   inOptions: {
     channelCount: 1,
     sampleFormat: 8,
-    sampleRate: 44100,
+    sampleRate: 22050,
     deviceId: DEVICE_ID,
     highwaterMark: HIGHWATER_MARK,
     closeOnError: true,
