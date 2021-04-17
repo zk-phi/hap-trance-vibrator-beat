@@ -4,7 +4,7 @@ const usb = require('usb');
 
 const DEVICE_ID = 2;
 const AMPLITUDE = 5;
-const HIGHWATER_MARK = 92; // controls buffer size
+const HIGHWATER_MARK = 32; // controls buffer size
 
 const audioIn = new portAudio.AudioIO({
   inOptions: {
