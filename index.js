@@ -3,8 +3,8 @@ const portAudio = require('naudiodon');
 const usb = require('usb');
 
 const DEVICE_ID = 2;
-const AMPLITUDE = 0.25;
-const HIGHWATER_MARK = 16; // controls buffer size
+const AMPLITUDE = 5;
+const HIGHWATER_MARK = 8; // controls buffer size
 
 const audioIn = new portAudio.AudioIO({
   inOptions: {
@@ -19,31 +19,34 @@ const audioIn = new portAudio.AudioIO({
 
 const trv = usb.findByIds(0x0b49, 0x064f);
 if (!trv) {
-  throw "No transvibrator found.";
+  console.log("WARNING: NO TRANCEVIBRATOR FOUND");
 } else {
   trv.open();
-  console.log("Transvibrator initialized.");
+  console.log("Trancevibrator initialized.");
 }
 
 process.on('SIGINT', () => {
-  console.log('Received SIGINT. Stopping recording.');
+  console.log('Received SIGINT. Stopping.');
   audioIn.quit();
   process.exit(0);
 });
 
-const buf = new Buffer([]);
+console.log('Send SIGINT (Ctrl-C) to quit.');
+const buf = Buffer.alloc(0);
 const consumer = new Writable({
   write(data, _encoding, callback) {
     let sum = 0;
     for (let i = 0; i < data.length; i++) {
-      sum += data.readInt8(i) ** 2;
+      sum += Math.abs(data.readInt8(i));
     }
     // --- 0 - 255 value
-    const value = Math.min(Math.floor(sum / data.length) * AMPLITUDE, 255);
-    trv.controlTransfer(65, 1, value, 0, buf);
-    // --- 0 - 15 value
-    const visualizerValue = Math.floor(value / 16);
-    console.log('*'.repeat(visualizerValue) + ".".repeat(15 - visualizerValue));
+    const value = Math.min(Math.floor(sum / data.length * AMPLITUDE), 255);
+    if (trv) {
+      trv.controlTransfer(65, 1, value, 0, buf);
+    }
+    // --- 0 - 63 value
+    const visualizerValue = Math.floor(value / 4);
+    process.stdout.write(`\r|${'#'.repeat(visualizerValue)}${'.'.repeat(63 - visualizerValue)}| `);
     callback();
   }
 });
