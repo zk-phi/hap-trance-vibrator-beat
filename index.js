@@ -43,10 +43,11 @@ const consumer = new Writable({
     const value = Math.min(Math.floor(sum / data.length * AMPLITUDE), 255);
     if (trv) {
       trv.controlTransfer(65, 1, value, 0, buf);
+    } else {
+      // --- 0 - 63 value
+      const visualizerValue = Math.floor(value / 4);
+      process.stdout.write(`\r|${'#'.repeat(visualizerValue)}${'.'.repeat(63 - visualizerValue)}| `);
     }
-    // --- 0 - 63 value
-    const visualizerValue = Math.floor(value / 4);
-    process.stdout.write(`\r|${'#'.repeat(visualizerValue)}${'.'.repeat(63 - visualizerValue)}| `);
     callback();
   }
 });
