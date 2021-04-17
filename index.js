@@ -46,7 +46,7 @@ const consumer = new Writable({
     } else {
       // --- 0 - 63 value
       const visualizerValue = Math.floor(value / 4);
-      process.stdout.write(`\r|${'#'.repeat(visualizerValue)}${'.'.repeat(63 - visualizerValue)}| `);
+      process.stdout.write(`${'#'.repeat(visualizerValue)}${'.'.repeat(63 - visualizerValue)}\n`);
     }
     callback();
   }
