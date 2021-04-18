@@ -3,7 +3,7 @@ const portAudio = require('naudiodon');
 const usb = require('usb');
 
 const DEVICE_ID = 2;
-const AMPLITUDE = 5;
+const AMPLITUDE = 3;
 const HIGHWATER_MARK = 32; // controls buffer size
 
 const audioIn = new portAudio.AudioIO({
