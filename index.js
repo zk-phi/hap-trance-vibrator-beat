@@ -18,40 +18,42 @@ const audioIn = new portAudio.AudioIO({
   }
 });
 
-const trv = usb.findByIds(0x0b49, 0x064f);
-if (!trv) {
-  console.log("WARNING: NO TRANCEVIBRATOR FOUND");
-} else {
-  trv.open();
-  console.log("Trancevibrator initialized.");
-}
+const trvOut = (() => {
+  const trv = usb.findByIds(0x0b49, 0x064f);
+  if (!trv) {
+    console.log("WARNING: NO TRANCEVIBRATOR FOUND");
+  } else {
+    trv.open();
+    console.log("Trancevibrator initialized.");
+  }
 
+  const buf = Buffer.alloc(0);
+  return new Writable({
+    write(data, _encoding, callback) {
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) {
+        sum += Math.abs(data.readInt8(i));
+      }
+      // --- 0 - 255 value
+      const value = Math.min(Math.floor(sum / data.length * AMPLITUDE), 255);
+      if (trv) {
+        trv.controlTransfer(65, 1, value, 0, buf);
+      } else {
+        // --- 0 - 63 value
+        const visualizerValue = Math.floor(value / 4);
+        process.stdout.write(`\r${'#'.repeat(visualizerValue)}${'.'.repeat(63 - visualizerValue)} `);
+      }
+      callback();
+    }
+  });
+})();
+
+console.log('Send SIGINT (Ctrl-C) to quit.');
 process.on('SIGINT', () => {
   console.log('Received SIGINT. Stopping.');
   audioIn.quit();
   process.exit(0);
 });
 
-console.log('Send SIGINT (Ctrl-C) to quit.');
-const buf = Buffer.alloc(0);
-const consumer = new Writable({
-  write(data, _encoding, callback) {
-    let sum = 0;
-    for (let i = 0; i < data.length; i++) {
-      sum += Math.abs(data.readInt8(i));
-    }
-    // --- 0 - 255 value
-    const value = Math.min(Math.floor(sum / data.length * AMPLITUDE), 255);
-    if (trv) {
-      trv.controlTransfer(65, 1, value, 0, buf);
-    } else {
-      // --- 0 - 63 value
-      const visualizerValue = Math.floor(value / 4);
-      process.stdout.write(`${'#'.repeat(visualizerValue)}${'.'.repeat(63 - visualizerValue)}\n`);
-    }
-    callback();
-  }
-});
-
-audioIn.pipe(consumer);
+audioIn.pipe(trvOut);
 audioIn.start();
