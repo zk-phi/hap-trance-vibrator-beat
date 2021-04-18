@@ -7,6 +7,8 @@ const AMPLITUDE = 3;
 const SAMPLE_RATE = 4000;
 const HIGHWATER_MARK = 32; // controls buffer size
 
+const DEBUG = false;
+
 const audioIn = new portAudio.AudioIO({
   inOptions: {
     channelCount: 1,
@@ -38,10 +40,11 @@ const trvOut = (() => {
       const value = Math.min(Math.floor(sum / data.length * AMPLITUDE), 255);
       if (trv) {
         trv.controlTransfer(65, 1, value, 0, buf);
-      } else {
+      }
+      if (DEBUG) {
         // --- 0 - 63 value
         const visualizerValue = Math.floor(value / 4);
-        process.stdout.write(`\r${'#'.repeat(visualizerValue)}${'.'.repeat(63 - visualizerValue)} `);
+        process.stdout.write(`${'#'.repeat(visualizerValue)}${'.'.repeat(63 - visualizerValue)}\n`);
       }
       callback();
     }
