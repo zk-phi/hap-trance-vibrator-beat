@@ -4,13 +4,14 @@ const usb = require('usb');
 
 const DEVICE_ID = 2;
 const AMPLITUDE = 3;
-const HIGHWATER_MARK = 32; // controls buffer size
+const SAMPLE_RATE = 4000;
+const HIGHWATER_MARK = 16; // controls buffer size
 
 const audioIn = new portAudio.AudioIO({
   inOptions: {
     channelCount: 1,
     sampleFormat: 8,
-    sampleRate: 8000,
+    sampleRate: SAMPLE_RATE,
     deviceId: DEVICE_ID,
     highwaterMark: HIGHWATER_MARK,
     closeOnError: true,
