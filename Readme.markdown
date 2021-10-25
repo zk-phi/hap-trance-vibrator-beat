@@ -4,6 +4,8 @@
 
 ダンスミュージックやアクションゲーム・映画に合わせて振動させると楽しいです。
 
+※ ブラウザで動く版ができたので、こっちがおすすめです https://zk-phi.github.io/hap-trance-vibrator-beat-web/
+
 # セットアップ
 
 0. nodejs, npm をインストール
